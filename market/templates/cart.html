@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load market_extras %}
+{% block title %}
+    Cart
+{% endblock title %}
+
+{% block content %}
+    <div class="container">
+        {% if is_cart_empty %}
+            <div class="row">
+                <div class="col my-5 text-center">
+                    <div class="h2">
+                        Your cart is empty.
+                    </div>
+                    <div class="fs-5">
+                        <a class="text-decoration-none" href="{% url 'index' %}">Show categories</a>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            {% for category, product_list in products.items %}
+                {% for product_count, product in product_list %}
+                    <div class="row justify-content-center cart-product mb-3" id="{{ product.product_code }}">
+                        <div class="col-12 col-md-4 col-lg-3 mb-3"><img class="img-fluid" src="{{ product.product_image.url }}" alt=""></div>
+                        <div class="col-12 col-md-4 col-lg-3 mb-2">
+                            <h2 class="fw-light mb-3 "><a class="text-decoration-none" href="#">{{ product.brand }} {{ product.model }}</a></h2>
+                            <ul>
+                                {% if category == 'laptops' %}
+                                    {% include 'laptop_detail.html' with item=product %}
+                                {% else %}
+                                    {% include 'desktop_detail.html' with item=product %}
+                                {% endif %}
+                            </ul>
+                            {% if product.count > 0 %}
+                                <span class="badge px-3 py-2 text-bg-success">In stock</span>
+                            {% else %}
+                                <span class="badge px-3 py-2 text-bg-secondary">Out of stock</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-12  col-md-3 col-lg-2 mb-3 d-flex flex-column justify-content-center">
+                            <div class="d-flex justify-content-center align-items-center">
+                                <h3>
+                                    <span class="product-price">
+                                        {{ product.price|mul:product_count }}
+                                    </span> $
+                                </h3>
+                            </div>
+                            <div class="d-flex justify-content-center align-items-center">
+                                <input type="hidden" name="product_code" value="{{ product.product_code }}">
+                                <input type="hidden" name="category" value="{{ product.category }}">
+                                <input type="hidden" name="price" value="{{ product.price }}">
+                                {% if product_count > 1 %}
+                                    <button class="btn btn-primary px-3 reduce-product-count_btn" type="button">-</button>
+                                {% else %}
+                                    <button class="btn btn-primary px-3 reduce-product-count_btn" disabled type="button">-</button>
+                                {% endif %}
+                                <div class="mx-3 d-flex align-items-center">
+                                    Count: <span class="product-count ms-2">{{ product_count }}</span>
+                                </div>
+                                <button class="btn btn-primary px-3 add-product-count_btn" type="button">+</button>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-1 col-lg-2 d-flex align-items-center">
+                            {% csrf_token %}
+                            <input type="hidden" name="product_code" value="{{ product.product_code }}">
+                            <input type="hidden" name="category" value="{{ product.category }}">
+                            <button class="btn btn-outline-secondary px-4 delete-from-cart_btn" type="button">Remove</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% endfor %}
+                <div class="row border-top border-success border-4 pt-3">
+                    <div class="col d-flex justify-content-between">
+                        <div class="fs-1">
+                            <strong>Total price:</strong>
+                            <span class="total-price">{{ total_price }}</span> $
+                        </div>
+                        <button class="btn-primary btn px-5">Order</button>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    
+    </div>
+{% endblock content %}
