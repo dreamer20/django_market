@@ -8,6 +8,7 @@ def create_laptop():
     product_code = Product_code.objects.create(product_code='020202')
     laptop = Laptop.objects.create(
         product_code=product_code,
+        product_image='',
         brand='Lenovo',
         model='E-500',
         price=2000,
@@ -69,25 +70,32 @@ class CartViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'cart.html')
 
+    def test_view_shows_cart_with_items(self):
+        laptop = create_laptop()
+        s = self.client.session
+        s['items'] = dict()
+        s['items'][laptop.product_code.product_code] = 1
+        s.save()
+        response = self.client.get(reverse('cart'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['products']), 1)
+
 
 class CartAddProductViewTest(TestCase):
     def test_view_adds_product_to_cart(self):
         laptop = create_laptop()
         data = {
             'product_code': laptop.product_code.product_code,
-            'category': laptop.category.name
         }
         response = self.client.post(reverse('cart_add'), data)
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(self.client.session.get('items'), dict)
-        self.assertIsInstance(self.client.session['items'].get(laptop.category.name), dict)
-        self.assertEqual(len(self.client.session['items'][laptop.category.name]), 1)
+        self.assertEqual(len(self.client.session['items']), 1)
 
     def test_view_adds_few_same_products_to_cart(self):
         laptop = create_laptop()
         data = {
             'product_code': laptop.product_code.product_code,
-            'category': laptop.category.name
         }
         response = self.client.post(reverse('cart_add'), data)
         response = self.client.post(reverse('cart_add'), data)
@@ -95,8 +103,7 @@ class CartAddProductViewTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(self.client.session.get('items'), dict)
-        self.assertIsInstance(self.client.session['items'].get(laptop.category.name), dict)
-        self.assertEqual(self.client.session['items'][laptop.category.name][laptop.product_code.product_code], 3)
+        self.assertEqual(self.client.session['items'][laptop.product_code.product_code], 3)
 
 
 class CartRemoveProductViewTest(TestCase):
@@ -105,17 +112,16 @@ class CartRemoveProductViewTest(TestCase):
         laptop = create_laptop()
         data = {
             'product_code': laptop.product_code.product_code,
-            'category': laptop.category.name
         }
         response = self.client.post(reverse('cart_add'), data)
         self.assertEqual(response.status_code, 200)
 
         response = self.client.post(reverse('cart_remove'), data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(self.client.session['items'][laptop.category.name]), 0)
+        self.assertEqual(len(self.client.session['items']), 0)
 
 
-class CartReduceProductCountView(TestCase):
+class CartReduceProductCountViewTest(TestCase):
     def test_view_reduces_count_of_product_from_cart(self):
         laptop = create_laptop()
         data = {
@@ -129,4 +135,4 @@ class CartReduceProductCountView(TestCase):
 
         response = self.client.post(reverse('cart_reduce'), data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(self.client.session['items'][laptop.category.name][laptop.product_code.product_code], 2)
+        self.assertEqual(self.client.session['items'][laptop.product_code.product_code], 2)

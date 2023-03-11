@@ -29,10 +29,11 @@ class Product(models.Model):
     class Meta:
         abstract = True
 
-    product_code = models.ForeignKey(
+    product_code = models.OneToOneField(
         Product_code,
         on_delete=models.CASCADE,
-        to_field='product_code'
+        to_field='product_code',
+        primary_key=True
     )
     brand = models.CharField(max_length=300)
     model = models.CharField(max_length=300)

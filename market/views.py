@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.generic import ListView, TemplateView
-from .models import Laptop
+from .models import Laptop, Product_code, Category
 # Create your views here.
 
 
@@ -41,27 +41,24 @@ class CartView(TemplateView):
     template_name = 'cart.html'
 
     def get(self, request, *args, **kwargs):
-        products = dict()
+        products = list()
         total_price = 0
         context = dict()
-        is_cart_empty = True
         items = request.session.get('items')
 
         if items is not None:
-            for category, product_list in items.items():
-                if len(product_list) > 0:
-                    is_cart_empty = False
-                    if category == 'laptops':
-                        products['laptops'] = list()
-                        for product_code, product_count in product_list.items():
-                            item = Laptop.objects.get(product_code=product_code)
-                            laptop = (product_count, item)
-                            total_price += item.price * product_count
-                            products['laptops'].append(laptop)
+            for product_code, product_count in items.items():
+                code = Product_code.objects.get(product_code=product_code)
+                categories = Category.objects.all()
+                for category in categories:
+                    product = getattr(code, category.name[:-1], None)
+                    if product is not None:
+                        products.append((product_count, product))
+                        total_price += product_count * product.price
+                        break
             context = {
                 'products': products,
                 'total_price': total_price,
-                'is_cart_empty': is_cart_empty
             }
 
         return render(request, self.template_name, context=context)
@@ -69,19 +66,15 @@ class CartView(TemplateView):
 
 class CartAddProductView(TemplateView):
     def post(self, request, *args, **kwargs):
-        category = request.POST['category']
         product_code = request.POST['product_code']
 
         if request.session.get('items') is None:
             request.session['items'] = dict()
 
-        if request.session['items'].get(category, None) is None:
-            request.session['items'][category] = dict()
-
-        if request.session['items'][category].get(product_code) is None:
-            request.session['items'][category][product_code] = 1
+        if request.session['items'].get(product_code) is None:
+            request.session['items'][product_code] = 1
         else:
-            request.session['items'][category][product_code] += 1
+            request.session['items'][product_code] += 1
         request.session.modified = True
 
         return HttpResponse(status=200)
@@ -89,13 +82,11 @@ class CartAddProductView(TemplateView):
 
 class CartReduceProductCountView(TemplateView):
     def post(self, request, *args, **kwargs):
-        category = request.POST['category']
         product_code = request.POST['product_code']
 
         if request.session.get('items') is not None:
-            if request.session['items'].get(category, None) is not None:
-                if request.session['items'][category][product_code] > 1:
-                    request.session['items'][category][product_code] -= 1
+            if request.session['items'][product_code] > 1:
+                request.session['items'][product_code] -= 1
         request.session.modified = True
 
         return HttpResponse(product_code)
@@ -103,12 +94,10 @@ class CartReduceProductCountView(TemplateView):
 
 class CartRemoveProductView(TemplateView):
     def post(self, request, *args, **kwargs):
-        category = request.POST['category']
         product_code = request.POST['product_code']
 
         if request.session.get('items') is not None:
-            if request.session['items'].get(category, None) is not None:
-                del request.session['items'][category][product_code]
+            del request.session['items'][product_code]
         request.session.modified = True
 
         return HttpResponse(product_code)
