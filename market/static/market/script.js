@@ -62,7 +62,7 @@ function addToCart(event) {
         mode: 'same-origin'
     };
 
-    fetch(window.location.origin + '/cart/add', options)
+    fetch(window.location.origin + '/cart/add/', options)
         .then(response => {
             if (response.status === 200) {
                 target.textContent = 'Remove from Cart';
@@ -84,7 +84,7 @@ function removeFromCart(event) {
         mode: 'same-origin'
     };
 
-    fetch(window.location.origin + '/cart/remove', options)
+    fetch(window.location.origin + '/cart/remove/', options)
         .then(response => {
             if (response.status === 200) {
                 target.textContent = 'Add to Cart';
@@ -107,7 +107,7 @@ function deleteFromCart(event, el, totalPriceElement) {
         mode: 'same-origin'
     };
 
-    fetch(window.location.origin + '/cart/remove', options)
+    fetch(window.location.origin + '/cart/remove/', options)
         .then(response => {
             if (response.status === 200) {
                 return response.text();
@@ -140,7 +140,7 @@ function addProductCount(event, el, reduceProductCountBtn, totalPriceElement) {
         headers: {'X-CSRFToken': csrftoken},
         mode: 'same-origin'
     };
-    fetch(window.location.origin + '/cart/add', options)
+    fetch(window.location.origin + '/cart/add/', options)
         .then(response => {
             if (response.status === 200) {
                 const productCount = parseInt(productCountElement.textContent);
@@ -170,7 +170,7 @@ function reduceProductCount(event, el, totalPriceElement) {
         headers: {'X-CSRFToken': csrftoken},
         mode: 'same-origin'
     };
-    fetch(window.location.origin + '/cart/reduce', options)
+    fetch(window.location.origin + '/cart/reduce/', options)
         .then(response => {
             if (response.status === 200) {
                 const productCount = parseInt(productCountElement.textContent);
