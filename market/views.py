@@ -1,7 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from django.urls import reverse
 from django.views.generic import ListView, TemplateView
 from .models import Laptop, Product_code, Category
+from . import models
+from .forms import OrderForm
 # Create your views here.
 
 
@@ -20,19 +23,17 @@ class CategoryView(ListView):
     def get_queryset(self):
         category = self.kwargs['category']
 
-        if category == 'desktops':
-            items = Laptop.objects.all()
-        elif category == 'laptops':
-            items = Laptop.objects.all()
-
+        Product = getattr(models, category[:-1].title())
+        # if category == 'desktops':
+        #     items = Laptop.objects.all()
+        # elif category == 'laptops':
+        #     items = Laptop.objects.all()
+        items = Product.objects.all()
         return items
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['category'] = self.kwargs['category']
-        items = self.request.session.get('items')
-        if items is not None:
-            context['product_codes'] = items[self.kwargs['category']]
 
         return context
 
@@ -101,3 +102,18 @@ class CartRemoveProductView(TemplateView):
         request.session.modified = True
 
         return HttpResponse(product_code)
+
+
+class OrderView(TemplateView):
+    template_name = 'order.html'
+    form_class = OrderForm
+
+    def get(self, request, *args, **kwargs):
+        items = request.session.get('items')
+
+        if items is None or len(items) == 0:
+            return redirect(reverse('cart'))
+
+        form = self.form_class()
+
+        return render(request, self.template_name, {'form': form})

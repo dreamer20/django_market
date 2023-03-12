@@ -72,12 +72,12 @@
                     </div>
                 {% endfor %}
                 <div class="row border-top border-success border-4 pt-3">
-                    <div class="col d-flex justify-content-between">
+                    <div class="col d-flex justify-content-between align-items-center">
                         <div class="fs-1">
                             <strong>Total price:</strong>
                             <span class="total-price">{{ total_price }}</span> $
                         </div>
-                        <button class="btn-primary btn px-5">Order</button>
+                        <a href="{% url 'order' %}" class="btn-primary btn px-5">Order</a>
                     </div>
                 </div>
             </div>

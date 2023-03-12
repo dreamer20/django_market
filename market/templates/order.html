@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Order
+{% endblock title %}
+
+{% block content %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-10 col-lg-8 col-xl-6">
+                <h2>Order form</h2>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-10 col-lg-8 col-xl-6">
+                {% for field in form %}
+                <form action="" class="p-3 border">
+                    <div class="row g-3 mb-3">
+                        <label for="{{ field.auto_id }}" class="col-sm-3 col-form-label">{{ field.label_tag }}</label>
+                        <div class="col-sm-9">
+                            {{ field }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div class="row border-top pt-3 align-items-center">
+                        <div class="col-auto me-auto ">
+                            Total price: 2000 $
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-primary px-4">Make order</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

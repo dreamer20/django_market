@@ -2,6 +2,7 @@ from django.db import models
 from django.core import validators
 from .validators import validate_price
 from tinymce import models as tinymce_models
+from django.utils import timezone
 
 # Create your models here.
 
@@ -53,6 +54,27 @@ class Product(models.Model):
 
     def __str__(self):
         return f'{self.brand}: {self.model}'
+
+
+class Order(models.Model):
+    adress = models.CharField(max_length=300)
+    client_name = models.CharField(max_length=300)
+    phone_number = models.CharField(max_length=12)
+    email = models.EmailField(blank=True, null=True)
+    order_date = models.DateTimeField(default=timezone.now)
+
+
+class Order_items(models.Model):
+    order_id = models.ForeignKey(
+        Order,
+        on_delete=models.CASCADE
+    )
+    product_code = models.ForeignKey(
+        Product_code,
+        on_delete=models.CASCADE,
+        to_field='product_code',
+    )
+    count = models.IntegerField()
 
 
 class Laptop(Product):

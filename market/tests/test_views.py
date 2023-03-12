@@ -136,3 +136,36 @@ class CartReduceProductCountViewTest(TestCase):
         response = self.client.post(reverse('cart_reduce'), data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.client.session['items'][laptop.product_code.product_code], 2)
+
+
+class OrderViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.laptop = create_laptop()
+
+    def setUp(self):
+        session = self.client.session
+        session['items'] = dict()
+        session['items'][self.laptop.product_code.product_code] = 1
+        session.save()
+
+    def test_view_url_exists_at_desired_location(self):
+        response = self.client.get('/cart/order')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_url_accessible_by_name(self):
+        response = self.client.get(reverse('order'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_uses_correct_template(self):
+        response = self.client.get(reverse('order'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'order.html')
+
+    def test_view_redurects_if_cart_is_empty(self):
+        session = self.client.session
+        session.clear()
+        session.save()
+
+        response = self.client.get(reverse('order'))
+        self.assertRedirects(response, reverse('cart'))
