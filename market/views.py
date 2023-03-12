@@ -50,12 +50,13 @@ class CartView(TemplateView):
         items = request.session.get('items')
 
         if items is not None:
-            for product_code, product_count in items.items():
-                code = Product_code.objects.get(product_code=product_code)
+            product_codes = Product_code.objects.filter(product_code__in=items.keys())
+            for product_code in product_codes:
                 categories = Category.objects.all()
                 for category in categories:
-                    product = getattr(code, category.name[:-1], None)
+                    product = getattr(product_code, category.name[:-1], None)
                     if product is not None:
+                        product_count = items[product_code.product_code]
                         products.append((product_count, product))
                         total_price += product_count * product.price
                         break
