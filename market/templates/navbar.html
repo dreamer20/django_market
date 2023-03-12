@@ -18,7 +18,9 @@
         </form>
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link text-capitalize" aria-current="page" href="{% url 'cart' %}">Cart</a>
+            <a class="nav-link text-capitalize" aria-current="page" href="{% url 'cart' %}">
+              Cart 	&#40;<span class="cart_items-count">{{ items_count }}</span>&#41;
+            </a>
           </li>  
       </ul>
       </div>

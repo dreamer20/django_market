@@ -34,7 +34,9 @@ class CategoryView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['category'] = self.kwargs['category']
-
+        items = self.request.session.get('items')
+        if items is not None:
+            context['product_codes'] = items.keys()
         return context
 
 
@@ -74,6 +76,7 @@ class CartAddProductView(TemplateView):
 
         if request.session['items'].get(product_code) is None:
             request.session['items'][product_code] = 1
+            request.session['items_count'] = len(request.session['items'])
         else:
             request.session['items'][product_code] += 1
         request.session.modified = True
@@ -99,6 +102,8 @@ class CartRemoveProductView(TemplateView):
 
         if request.session.get('items') is not None:
             del request.session['items'][product_code]
+            request.session['items_count'] = len(request.session['items'])
+
         request.session.modified = True
 
         return HttpResponse(product_code)

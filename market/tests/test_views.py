@@ -92,6 +92,17 @@ class CartAddProductViewTest(TestCase):
         self.assertIsInstance(self.client.session.get('items'), dict)
         self.assertEqual(len(self.client.session['items']), 1)
 
+    def test_view_has_items_count_in_context(self):
+        laptop = create_laptop()
+        data = {
+            'product_code': laptop.product_code.product_code,
+        }
+        response = self.client.post(reverse('cart_add'), data)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(reverse('cart'))
+        self.assertEqual(response.context['items_count'], 1)
+
     def test_view_adds_few_same_products_to_cart(self):
         laptop = create_laptop()
         data = {
