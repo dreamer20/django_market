@@ -116,10 +116,26 @@ class OrderView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         items = request.session.get('items')
+        total_price = 0
 
         if items is None or len(items) == 0:
             return redirect(reverse('cart'))
 
         form = self.form_class()
+        items = request.session.get('items')
 
-        return render(request, self.template_name, {'form': form})
+        if items is not None:
+            product_codes = Product_code.objects.filter(product_code__in=items.keys())
+            for product_code in product_codes:
+                categories = Category.objects.all()
+                for category in categories:
+                    product = getattr(product_code, category.name[:-1], None)
+                    if product is not None:
+                        product_count = items[product_code.product_code]
+                        total_price += product_count * product.price
+                        break
+        context = {
+            'form': form,
+            'total_price': total_price
+        }
+        return render(request, self.template_name, context)
