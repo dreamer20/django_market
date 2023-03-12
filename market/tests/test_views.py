@@ -3,15 +3,15 @@ from django.urls import reverse
 from market.models import Laptop, Product_code, Category
 
 
-def create_laptop():
+def create_laptop(product_code='020202', price=2000):
     category = Category.objects.create(name='laptops')
-    product_code = Product_code.objects.create(product_code='020202')
+    product_code = Product_code.objects.create(product_code=product_code)
     laptop = Laptop.objects.create(
         product_code=product_code,
         product_image='',
         brand='Lenovo',
         model='E-500',
-        price=2000,
+        price=price,
         count=2,
         category=category,
         screen_size='',
@@ -153,11 +153,13 @@ class OrderViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.laptop = create_laptop()
+        cls.laptop2 = create_laptop('010101', 1500)
 
     def setUp(self):
         session = self.client.session
         session['items'] = dict()
         session['items'][self.laptop.product_code.product_code] = 1
+        session['items'][self.laptop2.product_code.product_code] = 2
         session.save()
 
     def test_view_url_exists_at_desired_location(self):
@@ -180,3 +182,11 @@ class OrderViewTest(TestCase):
 
         response = self.client.get(reverse('order'))
         self.assertRedirects(response, reverse('cart'))
+
+    def test_view_context_has_correct_total_price(self):
+        response = self.client.get(reverse('order'))
+        self.assertEqual(response.status_code, 200)
+        laptopCount = self.client.session['items'][self.laptop.product_code.product_code]
+        laptop2Count = self.client.session['items'][self.laptop2.product_code.product_code]
+        expectedPrice = self.laptop.price * laptopCount + self.laptop2.price * laptop2Count
+        self.assertEqual(response.context['total_price'], expectedPrice)
