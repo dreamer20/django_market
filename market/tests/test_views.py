@@ -58,7 +58,7 @@ class CategoryViewTest(TestCase):
 
 class CartViewTest(TestCase):
     def test_view_url_exists_at_desired_location(self):
-        response = self.client.get('/cart')
+        response = self.client.get('/cart/')
         self.assertEqual(response.status_code, 200)
 
     def test_view_url_accessible_by_name(self):
@@ -163,7 +163,7 @@ class OrderViewTest(TestCase):
         session.save()
 
     def test_view_url_exists_at_desired_location(self):
-        response = self.client.get('/cart/order')
+        response = self.client.get('/cart/order/')
         self.assertEqual(response.status_code, 200)
 
     def test_view_url_accessible_by_name(self):

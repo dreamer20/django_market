@@ -14,11 +14,15 @@
         <div class="row justify-content-center">
             <div class="col-12 col-md-10 col-lg-8 col-xl-6">
                 {% for field in form %}
-                <form action="" class="p-3 border">
+                <form method="POST" class="p-3 border">
+                    {% csrf_token %}
                     <div class="row g-3 mb-3">
                         <label for="{{ field.auto_id }}" class="col-sm-3 col-form-label">{{ field.label_tag }}</label>
                         <div class="col-sm-9">
                             {{ field }}
+                            {% for error in field.errors %}
+                                <div class="form-text text-danger">{{ error }}</div>
+                            {% endfor %}
                         </div>
                     </div>
                     {% endfor %}
@@ -27,7 +31,7 @@
                             Total price: {{ total_price }} $
                         </div>
                         <div class="col-auto">
-                            <button class="btn btn-primary px-4">Make order</button>
+                            <button type="submit" class="btn btn-primary px-4">Make order</button>
                         </div>
                     </div>
                 </form>

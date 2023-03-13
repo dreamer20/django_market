@@ -65,7 +65,7 @@ class Order(models.Model):
 
 
 class Order_items(models.Model):
-    order_id = models.ForeignKey(
+    order = models.ForeignKey(
         Order,
         on_delete=models.CASCADE
     )
@@ -75,6 +75,9 @@ class Order_items(models.Model):
         to_field='product_code',
     )
     count = models.IntegerField()
+
+    def __str__(self):
+        return f'{self.order.client_name}: {self.product_code.laptop.brand}'
 
 
 class Laptop(Product):

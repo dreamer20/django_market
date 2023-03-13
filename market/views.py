@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.urls import reverse
 from django.views.generic import ListView, TemplateView
-from .models import Laptop, Product_code, Category
+from .models import Laptop, Product_code, Category, Order_items
 from . import models
 from .forms import OrderForm
 # Create your views here.
@@ -139,3 +139,29 @@ class OrderView(TemplateView):
             'total_price': total_price
         }
         return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        items = request.session.get('items')
+
+        print(items)
+        if items is None:
+            return redirect('cart')
+
+        if form.is_valid():
+            order = form.save()
+            product_codes = Product_code.objects.filter(product_code__in=items.keys())
+            for product_code in product_codes:
+                product_count = items[product_code.product_code]
+                Order_items.objects.create(
+                    order=order,
+                    product_code=product_code,
+                    count=product_count
+                )
+            return redirect(reverse('order_success'))
+
+        return render(request, self.template_name)
+
+
+class OrderSuccessView(TemplateView):
+    template_name = 'order_success.html'
