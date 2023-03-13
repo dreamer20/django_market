@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 
+{% block title %}
+    {{ category|capfirst }}
+{% endblock title %}
+
 {% block content %}
     <div class="container">
         {% for item in item_list %}
