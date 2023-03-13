@@ -165,3 +165,20 @@ class OrderView(TemplateView):
 
 class OrderSuccessView(TemplateView):
     template_name = 'order_success.html'
+
+
+class ProdcutDetailView(TemplateView):
+    template_name = 'product_detail.html'
+
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        category_name = kwargs['category']
+        product_code = kwargs['product_code']
+        items = request.session.get('items')
+        if items is not None:
+            if items.get(product_code) is not None:
+                context['product_code'] = product_code
+        Product = getattr(models, category_name[:-1].title())
+        product = Product.objects.get(product_code=product_code)
+        context['product'] = product
+        return render(request, self.template_name, context)

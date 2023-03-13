@@ -10,7 +10,11 @@
             <div class="row align-items-center border mb-3 pt-3">
                 <div class="col-12  col-md-4 mb-3"><img class="img-fluid" src="{{ item.product_image.url }}" alt=""></div>
                 <div class="col-12  col-md-5 mb-3">
-                    <h2 class="fw-light mb-3"><a class="text-decoration-none" href="#">{{ item.brand }} {{ item.model }}</a></h2>
+                    <h2 class="fw-light mb-3">
+                        <a class="text-decoration-none" href="{% url 'product_detail' category=category product_code=item.product_code.product_code %}">
+                        {{ item.brand }} {{ item.model }}
+                        </a>
+                    </h2>
                     <ul>
                         {% if category == 'laptops' %}
                         {% include 'laptop_detail.html' %}

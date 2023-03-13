@@ -190,3 +190,31 @@ class OrderViewTest(TestCase):
         laptop2Count = self.client.session['items'][self.laptop2.product_code.product_code]
         expectedPrice = self.laptop.price * laptopCount + self.laptop2.price * laptop2Count
         self.assertEqual(response.context['total_price'], expectedPrice)
+
+
+class ProductDetailViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.laptop = create_laptop()
+        cls.laptop2 = create_laptop('010101', 1500)
+
+    def test_view_url_exists_at_desired_location(self):
+        response = self.client.get(f'/category/laptops/{self.laptop.product_code.product_code}/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_url_accessible_by_name(self):
+        argumets = {
+            'category': 'laptops',
+            'product_code': self.laptop.product_code.product_code
+        }
+        response = self.client.get(reverse('product_detail', kwargs=argumets))
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_uses_correct_template(self):
+        argumets = {
+            'category': 'laptops',
+            'product_code': self.laptop.product_code.product_code
+        }
+        response = self.client.get(reverse('product_detail', kwargs=argumets))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'product_detail.html')
