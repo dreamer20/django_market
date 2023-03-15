@@ -12,12 +12,22 @@
     {% endblock media %}
 </head>
 <body>
-    <div class="d-flex flex-column justify-content-between" style="height: 100%;">
+    <div class="d-flex flex-column" style="height: 100%;">
         {% include 'navbar.html' %}
-        {% block content %}
-        
-        {% endblock content %}
-
+        <div class="mb-3">
+            {% block content %}
+            
+            {% endblock content %}
+        </div>
+        <footer class="footer mt-auto py-2">
+            <div class="container">
+                <div class="row mt-3 mb-3">
+                    <div class="col text-end">
+                        &#169; 2023, Market
+                    </div>
+                </div>        
+            </div>
+        </footer>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
