@@ -218,3 +218,15 @@ class ProductDetailViewTest(TestCase):
         response = self.client.get(reverse('product_detail', kwargs=argumets))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'product_detail.html')
+
+
+class PersonalSettingsViewTest(TestCase):
+    def test_view_saves_filter_form_status_in_session(self):
+        response = self.client.get(reverse('personal_settings') + '?filter_form=collapsed')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(self.client.session['isFilterFormCollapsed'])
+
+    def test_view_saves_filter_form_status_in_session_as_expanded(self):
+        response = self.client.get(reverse('personal_settings') + '?filter_form=expanded')
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(self.client.session['isFilterFormCollapsed'])

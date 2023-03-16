@@ -1,11 +1,70 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %}
     {{ category|capfirst }}
 {% endblock title %}
 
 {% block content %}
-    <div class="container">
+<div class="container">
+    <div class="row mb-3">
+        <button 
+            class="btn btn-outline-secondary"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#filterForm" 
+            aria-expanded="false"
+            aria-controls="filterForm"
+            id="filterFormCollapseBtn">
+            Filter
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel" viewBox="0 0 16 16">
+                <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2h-11z"/>
+              </svg>
+        </button>
+    </div>
+        <form
+            {% if isFilterFormCollapsed %}
+                class="collapse mb-3"
+                {% else %}
+                class="collapse show mb-3"
+            {% endif %}
+            method="GET" 
+            id="filterForm">
+            <div class="row mb-3">
+                <div class="col-12 col-md-3 col-lg-2 mb-3">
+                    <div class="mb-3 text-center">
+                        <strong class="mb-2">Price, $:</strong>
+                    </div>
+                    <div class="input-group input-group-sm mb-3">
+                        <span class="input-group-text" id="{{ form.price_min.name }}">Min</span>
+                        {{ form.price_min }}
+                    </div>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text" id="{{ form.price_max.name }}">Max</span>
+                        {{ form.price_max }}
+                    </div>
+                </div>
+                {% for field in form %}
+                    {% if field.name != 'price_min' and field.name != 'price_max' %}
+                        <div class="col-12 col-md-auto mb-3">
+                            <div class="mb-2 text-center">
+                                <strong class="mb-3">{{ field.label_tag }}</strong>
+                            </div>
+                            {{ field }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="float-end">
+                        <a href="{% url 'category' category=category %}" class="btn btn-outline-primary me-3 px-5">Reset</a>
+                        <button type="submit" class="btn btn-outline-primary px-5">Filter</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+</div>
+<div class="container">
         {% for item in item_list %}
             <div class="row align-items-center border mb-3 pt-3">
                 <div class="col-12  col-md-4 mb-3"><img class="img-fluid" src="{{ item.product_image.url }}" alt=""></div>
@@ -41,6 +100,13 @@
                             <button class="btn btn-secondary" disabled type="button">Out of stock</button>
                         {% endif %}
                     </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="row">
+                <div class="col text-center">
+                    <img class="mb-3" src="{% static 'market/search.svg' %}" height="100" alt="not found">
+                    <div class="fs-4" >Nothing to be found</div>
                 </div>
             </div>
         {% endfor %}

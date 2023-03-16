@@ -1,5 +1,6 @@
 const totalPriceElement = document.querySelector('.total-price');
 const container = document.querySelector('.container');
+const filterForm = document.querySelector('#filterForm');
 
 const cartItemsCount = {
     cartItemsCountElement: document.querySelector('.cart_items-count'),
@@ -38,6 +39,23 @@ function generatePlaceholder() {
 
     return row;
 };
+
+function sendPersonalSettings(value) {
+    const queryParams = new URLSearchParams({
+        filter_form: value
+    })
+    const options = {
+        method: 'GET',
+        mode: 'same-origin'
+    };
+
+    fetch(window.location.origin + '/personal/?' + queryParams, options)
+        .then(response => {
+            if (!response.ok) {
+                alert('Server error: Personal settings doesn\'t saved.')
+            }
+        });
+}
 
 function createForm(target) {
     const product_code_query = 'input[name=product_code]';
@@ -214,3 +232,13 @@ document.querySelectorAll('.add-to-cart_btn').forEach((el) => {
 document.querySelectorAll('.remove-from-cart_btn').forEach((el) => {
     el.addEventListener('click', removeFromCart);
 });
+
+if (filterForm) {
+    filterForm.addEventListener('hidden.bs.collapse', event => {
+        sendPersonalSettings('collapsed')
+    });
+
+    filterForm.addEventListener('shown.bs.collapse', event => {
+        sendPersonalSettings('expanded')
+    }); 
+};

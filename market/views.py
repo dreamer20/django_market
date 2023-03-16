@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.views.generic import ListView, TemplateView
 from .models import Laptop, Product_code, Category, Order_items
 from . import models
-from .forms import OrderForm
+from .forms import OrderForm, LaptopFilterForm
 # Create your views here.
 
 
@@ -24,11 +24,20 @@ class CategoryView(ListView):
         category = self.kwargs['category']
 
         Product = getattr(models, category[:-1].title())
-        # if category == 'desktops':
-        #     items = Laptop.objects.all()
-        # elif category == 'laptops':
-        #     items = Laptop.objects.all()
+        form = LaptopFilterForm(self.request.GET)
         items = Product.objects.all()
+
+        if form.is_valid():
+            print(form.cleaned_data)
+            if form.cleaned_data['price_min'] is not None:
+                items = Product.objects.filter(price__gte=form.cleaned_data['price_min'])
+            if form.cleaned_data['price_max'] is not None:
+                items = Product.objects.filter(price__lte=form.cleaned_data['price_max'])
+            for key, value in form.cleaned_data.items():
+                if key not in ('price_min', 'price_max'):
+                    if len(value) > 0:
+                        option = {f'{key}__in': value}
+                        items = Product.objects.filter(**option)
         return items
 
     def get_context_data(self, **kwargs):
@@ -37,6 +46,9 @@ class CategoryView(ListView):
         items = self.request.session.get('items')
         if items is not None:
             context['product_codes'] = items.keys()
+        form = LaptopFilterForm(self.request.GET)
+        context['form'] = form
+        context['isFilterFormCollapsed'] = self.request.session['isFilterFormCollapsed']
         return context
 
 
@@ -182,3 +194,15 @@ class ProdcutDetailView(TemplateView):
         product = Product.objects.get(product_code=product_code)
         context['product'] = product
         return render(request, self.template_name, context)
+
+
+class PersonalSettingsView(TemplateView):
+    def get(self, request, *args, **kwargs):
+        isFilterFormCollapsed = request.GET.get('filter_form')
+
+        if isFilterFormCollapsed == 'collapsed':
+            request.session['isFilterFormCollapsed'] = True
+        elif isFilterFormCollapsed == 'expanded':
+            request.session['isFilterFormCollapsed'] = False
+
+        return HttpResponse(status=200)
