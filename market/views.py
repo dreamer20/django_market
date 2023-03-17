@@ -29,7 +29,6 @@ class CategoryView(ListView):
         items = Product.objects.all()
 
         if form.is_valid():
-            print(form.cleaned_data)
             if form.cleaned_data['price_min'] is not None:
                 items = Product.objects.filter(price__gte=form.cleaned_data['price_min'])
             if form.cleaned_data['price_max'] is not None:
@@ -49,7 +48,7 @@ class CategoryView(ListView):
             context['product_codes'] = items.keys()
         form = LaptopFilterForm(self.request.GET)
         context['form'] = form
-        context['isFilterFormCollapsed'] = self.request.session['isFilterFormCollapsed']
+        context['isFilterFormCollapsed'] = self.request.session.get('isFilterFormCollapsed')
         return context
 
 
@@ -157,7 +156,6 @@ class OrderView(TemplateView):
         form = self.form_class(request.POST)
         items = request.session.get('items')
 
-        print(items)
         if items is None:
             return redirect('cart')
 

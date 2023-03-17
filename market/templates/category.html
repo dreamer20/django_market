@@ -67,7 +67,11 @@
 <div class="container">
         {% for item in item_list %}
             <div class="row align-items-center border mb-3 pt-3">
-                <div class="col-12  col-md-4 mb-3"><img class="img-fluid" src="{{ item.product_image.url }}" alt=""></div>
+                <div class="col-12  col-md-4 mb-3">
+                    {% if item.product_image %}
+                        <img class="img-fluid" src="{{ item.product_image.url }}" alt="item.model">
+                    {% endif %}
+                </div>
                 <div class="col-12  col-md-5 mb-3">
                     <h2 class="fw-light mb-3">
                         <a class="text-decoration-none" href="{% url 'product_detail' category=category product_code=item.product_code.product_code %}">
