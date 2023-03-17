@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+    Search for {{ q }}
+{% endblock title %}
+
+
+{% block content %}
+<div class="container">
+    {% for item in item_list %}
+        <div class="row align-items-center border mb-3 pt-3">
+            <div class="col-12  col-md-4 mb-3">
+                {% if item.product_image %}
+                    <img class="img-fluid" src="{{ item.product_image.url }}" alt="{{ item.model }}">
+                {% endif %}
+            </div>
+            <div class="col-12  col-md-5 mb-3">
+                <h2 class="fw-light mb-3">
+                    <a class="text-decoration-none" href="{% url 'product_detail' category=item.category.name product_code=item.product_code.product_code %}">
+                    {{ item.brand }} {{ item.model }}
+                    </a>
+                </h2>
+                <ul>
+                    {% if item.category.name == 'laptops' %}
+                    {% include 'laptop_detail.html' %}
+                    {% else %}
+                    {% include 'desktop_detail.html' %}
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="col-12  col-md-3 mb-3">
+                <div class="d-grid gap-2">
+                    <div class="mb-2 h3">
+                        {{ item.price }} $
+                    </div>
+                    {% csrf_token %}
+                    <input type="hidden" name="product_code" value="{{ item.product_code }}">
+                    <input type="hidden" name="category" value="{{ item.category }}">
+                    {% if item.count > 0 %}
+                        {% if item.product_code.product_code in product_codes %}    
+                        <button class="btn btn-success remove-from-cart_btn" type="button">Remove from cart</button>
+                        {% else %}
+                        <button class="btn btn-primary add-to-cart_btn" type="button">Add to cart</button>
+                        {% endif %}
+                    {% else %}    
+                        <button class="btn btn-secondary" disabled type="button">Out of stock</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="row">
+            <div class="col text-center">
+                <img class="mb-3" src="{% static 'market/search.svg' %}" height="100" alt="not found">
+                <div class="fs-4" >Nothing to be found</div>
+            </div>
+        </div>    
+    {% endfor %}
+</div>
+{% endblock content %}

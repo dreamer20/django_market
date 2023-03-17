@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.urls import reverse
 from django.views.generic import ListView, TemplateView
+from django.contrib.postgres.search import SearchVector
 from .models import Laptop, Product_code, Category, Order_items
 from . import models
 from .forms import OrderForm, LaptopFilterForm
@@ -206,3 +207,30 @@ class PersonalSettingsView(TemplateView):
             request.session['isFilterFormCollapsed'] = False
 
         return HttpResponse(status=200)
+
+
+class SearchView(ListView):
+    template_name = 'search.html'
+    context_object_name = 'item_list'
+
+    def get_queryset(self):
+        searchString = self.request.GET.get('q')
+        category = Category.objects.filter(name=searchString).first()
+        if category:
+            Product = getattr(models, category.name[:-1].title())
+            results = Product.objects.all()
+            return results
+        categories = Category.objects.all()
+        for category in categories:
+            Product = getattr(models, category.name[:-1].title())
+            s = SearchVector('brand', 'model', 'decription')
+            results = Product.objects.annotate(search=s).filter(search=searchString)
+        return results
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        items = self.request.session.get('items')
+        if items is not None:
+            context['product_codes'] = items.keys()
+        context['q'] = self.request.GET.get('q')
+        return context

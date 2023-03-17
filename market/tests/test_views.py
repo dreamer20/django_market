@@ -3,13 +3,13 @@ from django.urls import reverse
 from market.models import Laptop, Product_code, Category
 
 
-def create_laptop(product_code='020202', price=2000):
+def create_laptop(product_code='020202', price=2000, brand='Lenovo'):
     category = Category.objects.create(name='laptops')
     product_code = Product_code.objects.create(product_code=product_code)
     laptop = Laptop.objects.create(
         product_code=product_code,
         product_image='',
-        brand='Lenovo',
+        brand=brand,
         model='E-500',
         price=price,
         count=2,
@@ -230,3 +230,32 @@ class PersonalSettingsViewTest(TestCase):
         response = self.client.get(reverse('personal_settings') + '?filter_form=expanded')
         self.assertEqual(response.status_code, 200)
         self.assertFalse(self.client.session['isFilterFormCollapsed'])
+
+
+class SearchViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.laptop = create_laptop()
+        cls.laptop2 = create_laptop('010101', 1500, brand='Samsung')
+
+    def test_view_url_exists_at_desired_location(self):
+        response = self.client.get('/search/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_url_accessible_by_name(self):
+        response = self.client.get(reverse('search'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_uses_correct_template(self):
+        response = self.client.get(reverse('search'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'search.html')
+
+    def test_view_gets_searched_products(self):
+        response = self.client.get(reverse('search') + '?q=laptops')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['item_list'].count(), 2)
+
+        response = self.client.get(reverse('search') + '?q=Samsung')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['item_list'].count(), 1)
