@@ -87,3 +87,19 @@ class Laptop(Product):
     gpu = models.CharField(max_length=300, blank=True)
     ram_memory = models.IntegerField(blank=True)
     os = models.CharField(max_length=100, blank=True)
+
+
+class Desktop(Product):
+    disk_size = models.IntegerField(blank=True)
+    cpu = models.CharField(max_length=300, blank=True)
+    gpu = models.CharField(max_length=300, blank=True)
+    os = models.CharField(max_length=100, blank=True)
+
+
+class Television(Product):
+    screen_size = models.CharField(max_length=100, blank=True)
+    refresh_rate = models.IntegerField(blank=True)
+    resolution = models.CharField(max_length=300, blank=True)
+    display_technology = models.CharField(max_length=300, blank=True)
+    connectivity_technology = models.CharField(max_length=300, blank=True)
+    product_dimensions = models.CharField(max_length=300, blank=True)

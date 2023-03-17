@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.views.generic import ListView, TemplateView
 from django.contrib.postgres.search import SearchVector
 from .models import Laptop, Product_code, Category, Order_items
-from . import models
+from . import models, forms
 from .forms import OrderForm, LaptopFilterForm
 # Create your views here.
 
@@ -25,7 +25,9 @@ class CategoryView(ListView):
         category = self.kwargs['category']
 
         Product = getattr(models, category[:-1].title())
-        form = LaptopFilterForm(self.request.GET)
+        FilterForm = getattr(forms, f'{category[:-1].title()}FilterForm')
+        print(FilterForm)
+        form = FilterForm(self.request.GET)
         items = Product.objects.all()
 
         if form.is_valid():
@@ -43,10 +45,12 @@ class CategoryView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['category'] = self.kwargs['category']
+        category = self.kwargs['category']
         items = self.request.session.get('items')
         if items is not None:
             context['product_codes'] = items.keys()
-        form = LaptopFilterForm(self.request.GET)
+        FilterForm = getattr(forms, f'{category[:-1].title()}FilterForm')
+        form = FilterForm(self.request.GET)
         context['form'] = form
         context['isFilterFormCollapsed'] = self.request.session.get('isFilterFormCollapsed')
         return context

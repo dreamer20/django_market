@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load market_extras %}
+
 {% block title %}
     {{ category|capfirst }}
 {% endblock title %}
@@ -79,11 +81,7 @@
                         </a>
                     </h2>
                     <ul>
-                        {% if category == 'laptops' %}
-                        {% include 'laptop_detail.html' %}
-                        {% else %}
-                        {% include 'desktop_detail.html' %}
-                        {% endif %}
+                        {% include category|detail_filename %}
                     </ul>
                 </div>
                 <div class="col-12  col-md-3 mb-3">
