@@ -4,7 +4,11 @@ from market.models import Laptop, Product_code, Category
 
 
 def create_laptop(product_code='020202', price=2000, brand='Lenovo'):
-    category = Category.objects.create(name='laptops')
+    category = Category.objects.filter(name='laptops').first()
+
+    if category is None:
+        category = Category.objects.create(name='laptops')
+
     product_code = Product_code.objects.create(product_code=product_code)
     laptop = Laptop.objects.create(
         product_code=product_code,
@@ -254,8 +258,8 @@ class SearchViewTest(TestCase):
     def test_view_gets_searched_products(self):
         response = self.client.get(reverse('search') + '?q=laptops')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['item_list'].count(), 2)
+        self.assertEqual(len(response.context['page_obj'].object_list), 2)
 
-        response = self.client.get(reverse('search') + '?q=Samsung')
+        response = self.client.get(reverse('search') + '?q=Lenovo')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['item_list'].count(), 1)
+        self.assertEqual(len(response.context['page_obj'].object_list), 1)
