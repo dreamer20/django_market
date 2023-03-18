@@ -233,8 +233,8 @@ class SearchView(TemplateView):
 
         if category:
             Product = getattr(models, category.name[:-1].title())
-            results = Product.objects.all()
-            paginator = Paginator(results, 1)
+            results = Product.objects.all().order_by('product_code')
+            paginator = Paginator(results, self.paginate_by)
             page_obj = paginator.get_page(page_number)
             context['page_obj'] = page_obj
 
