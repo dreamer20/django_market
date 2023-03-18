@@ -2,11 +2,11 @@
 
 {% block content %}
     <div class="container">
-        <div class="row align-items-center justify-content-center">
+        <div class="row align-items-end justify-content-center">
             {% for category in category_list %}
                 <div class="col-12  col-md-5 mb-3">
-                    <a href="{% url 'category' category=category.name %}">
-                        <img class="img-fluid" src="{{ category.image.url }}" alt="{{ category.name }}">
+                    <a class="text-decoration-none" href="{% url 'category' category=category.name %}">
+                        <img class="img-fluid mb-3" src="{{ category.image.url }}" alt="{{ category.name }}">
                         <h2 class="fw-light mb-3 text-center">{{ category.name }}</h2>
                     </a>
                 </div>
