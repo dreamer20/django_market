@@ -1,5 +1,5 @@
 const totalPriceElement = document.querySelector('.total-price');
-const container = document.querySelector('.container');
+const cart = document.querySelector('.cart');
 const filterForm = document.querySelector('#filterForm');
 
 const cartItemsCount = {
@@ -138,9 +138,9 @@ function deleteFromCart(event, el, totalPriceElement) {
             el.remove();
             cartItemsCount.reduce()
 
-            if (container.children.length === 1) {
-                container.innerHTML = '';
-                container.append(generatePlaceholder());
+            if (cart.children.length === 1) {
+                cart.innerHTML = '';
+                cart.append(generatePlaceholder());
             }
         });
 };
