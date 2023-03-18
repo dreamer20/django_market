@@ -7,7 +7,7 @@
                 <div class="col-12  col-md-5 mb-3">
                     <a class="text-decoration-none" href="{% url 'category' category=category.name %}">
                         <img class="img-fluid mb-3" src="{{ category.image.url }}" alt="{{ category.name }}">
-                        <h2 class="fw-light mb-3 text-center">{{ category.name }}</h2>
+                        <h2 class="fw-light mb-3 text-center text-capitalize">{{ category.name }}</h2>
                     </a>
                 </div>
             {% endfor %}
