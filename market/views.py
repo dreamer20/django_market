@@ -1,6 +1,9 @@
+from itertools import chain
+from operator import attrgetter
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.urls import reverse
+from django.core.paginator import Paginator
 from django.views.generic import ListView, TemplateView
 from django.contrib.postgres.search import SearchVector
 from .models import Laptop, Product_code, Category, Order_items
@@ -211,28 +214,42 @@ class PersonalSettingsView(TemplateView):
         return HttpResponse(status=200)
 
 
-class SearchView(ListView):
+class SearchView(TemplateView):
     template_name = 'search.html'
-    context_object_name = 'item_list'
+    paginate_by = 10
 
-    def get_queryset(self):
+    def get(self, request, *args, **kwargs):
+        results = list()
+        context = dict()
+
         searchString = self.request.GET.get('q')
+        page_number = self.request.GET.get('page')
+        items = self.request.session.get('items')
+        context['q'] = self.request.GET.get('q')
+
         category = Category.objects.filter(name=searchString).first()
+
+        if items is not None:
+            context['product_codes'] = items.keys()
+
         if category:
             Product = getattr(models, category.name[:-1].title())
             results = Product.objects.all()
-            return results
+            paginator = Paginator(results, 1)
+            page_obj = paginator.get_page(page_number)
+            context['page_obj'] = page_obj
+
+            return render(request, 'search.html', context)
+
         categories = Category.objects.all()
         for category in categories:
             Product = getattr(models, category.name[:-1].title())
             s = SearchVector('brand', 'model', 'decription')
-            results = Product.objects.annotate(search=s).filter(search=searchString)
-        return results
+            results.append(Product.objects.annotate(search=s).filter(search=searchString))
+            products = sorted(chain(*results), key=attrgetter('brand'))
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        items = self.request.session.get('items')
-        if items is not None:
-            context['product_codes'] = items.keys()
-        context['q'] = self.request.GET.get('q')
-        return context
+        paginator = Paginator(products, self.paginate_by)
+        page_obj = paginator.get_page(page_number)
+        context['page_obj'] = page_obj
+
+        return render(request, 'search.html', context)
