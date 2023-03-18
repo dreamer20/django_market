@@ -29,7 +29,6 @@ class CategoryView(ListView):
 
         Product = getattr(models, category[:-1].title())
         FilterForm = getattr(forms, f'{category[:-1].title()}FilterForm')
-        print(FilterForm)
         form = FilterForm(self.request.GET)
         items = Product.objects.all()
 

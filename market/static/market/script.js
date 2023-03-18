@@ -62,7 +62,6 @@ function createForm(target) {
     const category_query = 'input[name=category]';
     const procut_code = target.querySelector(product_code_query);
     const category = target.querySelector(category_query);
-    console.log(category.value);
     const form = new FormData();
     form.append('category', category.value);
     form.append('product_code', procut_code.value);
