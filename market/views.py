@@ -243,7 +243,7 @@ class SearchView(TemplateView):
         categories = Category.objects.all()
         for category in categories:
             Product = getattr(models, category.name[:-1].title())
-            s = SearchVector('brand', 'model', 'decription')
+            s = SearchVector('brand', 'model', 'description')
             results.append(Product.objects.annotate(search=s).filter(search=searchString))
             products = sorted(chain(*results), key=attrgetter('brand'))
 

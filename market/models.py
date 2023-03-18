@@ -44,7 +44,7 @@ class Product(models.Model):
         validators=[validators.MinValueValidator(limit_value=0)],
         default=0
     )
-    decription = tinymce_models.HTMLField(default='', blank=True)
+    description = tinymce_models.HTMLField(default='', blank=True)
     category = models.ForeignKey(
         Category,
         models.SET_NULL,
