@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+ web:
+  build:
+   context: .
+  depends_on:
+    - postgresdb
+  entrypoint: ./start.sh
+  environment:
+    - initial=${initial}
+    - db_host=postgresdb
+    - db_name=postgres
+  ports:
+  - 8000:8000
+  volumes:
+  - ./:/app
+
+ postgresdb:
+  image: postgres
+  ports:
+  - 5432:5432
+
+  environment:
+  - POSTGRES_PASSWORD=peri54ri7end
