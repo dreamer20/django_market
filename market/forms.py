@@ -1,12 +1,9 @@
 from django import forms
 from .models import Laptop, Order, Desktop, Television
+from .utils import get_filter_choices
 
 
-def getChoices(Model, field_name):
-    return lambda: Model.objects.values_list(field_name, field_name).distinct()
-
-
-class MyWidjet(forms.CheckboxSelectMultiple):
+class CustomCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
     template_name = 'checkbox_select.html'
     option_template_name = 'checkbox_option.html'
 
@@ -21,7 +18,6 @@ class ProductForm(forms.ModelForm):
 
 
 class OrderForm(forms.ModelForm):
-
     class Meta:
         common_attrs = {'class': 'form-control'}
         model = Order
@@ -42,6 +38,7 @@ class LaptopFilterForm(forms.Form):
         widget=forms.NumberInput(common_attrs),
         required=False
     )
+
     price_max = forms.IntegerField(
         min_value=0,
         widget=forms.NumberInput(common_attrs),
@@ -50,44 +47,44 @@ class LaptopFilterForm(forms.Form):
     cpu = forms.MultipleChoiceField(
 
         label='Processor',
-        choices=getChoices(Laptop, 'cpu'),
+        choices=get_filter_choices(Laptop, 'cpu'),
         required=False,
-        widget=MyWidjet()
+        widget=CustomCheckboxSelectMultiple()
     )
 
     gpu = forms.MultipleChoiceField(
         label='GPU',
-        choices=getChoices(Laptop, 'gpu'),
+        choices=get_filter_choices(Laptop, 'gpu'),
         required=False,
-        widget=MyWidjet()
+        widget=CustomCheckboxSelectMultiple()
     )
 
     ram_memory = forms.MultipleChoiceField(
         label='Ram memory, Gb',
-        choices=getChoices(Laptop, 'ram_memory'),
+        choices=get_filter_choices(Laptop, 'ram_memory'),
         required=False,
-        widget=MyWidjet()
+        widget=CustomCheckboxSelectMultiple()
     )
 
     screen_size = forms.MultipleChoiceField(
         label='Screen size',
-        choices=getChoices(Laptop, 'screen_size'),
+        choices=get_filter_choices(Laptop, 'screen_size'),
         required=False,
-        widget=MyWidjet()
+        widget=CustomCheckboxSelectMultiple()
     )
 
     disk_size = forms.MultipleChoiceField(
         label='Disk size, Gb',
-        choices=getChoices(Laptop, 'disk_size'),
+        choices=get_filter_choices(Laptop, 'disk_size'),
         required=False,
-        widget=MyWidjet()
+        widget=CustomCheckboxSelectMultiple()
     )
 
     os = forms.MultipleChoiceField(
         label='OS',
-        choices=getChoices(Laptop, 'os'),
+        choices=get_filter_choices(Laptop, 'os'),
         required=False,
-        widget=MyWidjet()
+        widget=CustomCheckboxSelectMultiple()
     )
 
 
@@ -108,27 +105,30 @@ class DesktopFilterForm(forms.Form):
 
     cpu = forms.MultipleChoiceField(
         label='Processor',
-        choices=getChoices(Desktop, 'cpu'),
+        choices=get_filter_choices(Desktop, 'cpu'),
         required=False,
-        widget=MyWidjet()
+        widget=CustomCheckboxSelectMultiple()
     )
+
     gpu = forms.MultipleChoiceField(
         label='GPU',
-        choices=getChoices(Desktop, 'gpu'),
+        choices=get_filter_choices(Desktop, 'gpu'),
         required=False,
-        widget=MyWidjet()
+        widget=CustomCheckboxSelectMultiple()
     )
+
     disk_size = forms.MultipleChoiceField(
         label='Disk size',
-        choices=getChoices(Desktop, 'disk_size'),
+        choices=get_filter_choices(Desktop, 'disk_size'),
         required=False,
-        widget=MyWidjet()
+        widget=CustomCheckboxSelectMultiple()
     )
+
     os = forms.MultipleChoiceField(
         label='OS',
-        choices=getChoices(Desktop, 'os'),
+        choices=get_filter_choices(Desktop, 'os'),
         required=False,
-        widget=MyWidjet()
+        widget=CustomCheckboxSelectMultiple()
     )
 
 
@@ -140,26 +140,30 @@ class TelevisionFilterForm(forms.Form):
         widget=forms.NumberInput(common_attrs),
         required=False
     )
+
     price_max = forms.IntegerField(
         min_value=0,
         widget=forms.NumberInput(common_attrs),
         required=False
     )
+
     screen_size = forms.MultipleChoiceField(
         label='Screen size',
-        choices=getChoices(Television, 'screen_size'),
+        choices=get_filter_choices(Television, 'screen_size'),
         required=False,
-        widget=MyWidjet()
+        widget=CustomCheckboxSelectMultiple()
     )
+
     resolution = forms.MultipleChoiceField(
         label='Resolution',
-        choices=getChoices(Television, 'resolution'),
+        choices=get_filter_choices(Television, 'resolution'),
         required=False,
-        widget=MyWidjet()
+        widget=CustomCheckboxSelectMultiple()
     )
+
     display_technology = forms.MultipleChoiceField(
         label='Display technology',
-        choices=getChoices(Television, 'display_technology'),
+        choices=get_filter_choices(Television, 'display_technology'),
         required=False,
-        widget=MyWidjet()
+        widget=CustomCheckboxSelectMultiple()
     )

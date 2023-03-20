@@ -8,7 +8,7 @@ from django.views.generic import ListView, TemplateView
 from django.contrib.postgres.search import SearchVector
 from .models import Laptop, Product_code, Category, Order_items
 from . import models, forms
-from .forms import OrderForm, LaptopFilterForm
+from .forms import OrderForm
 # Create your views here.
 
 
