@@ -84,7 +84,7 @@ DATABASES = {
         'PORT': '5432',
         'NAME': os.environ['db_name'],
         'USER': 'postgres',
-        'PASSWORD': 'peri54ri7end',
+        'PASSWORD': 'secretpassword',
     }
 }
 
